@@ -7,7 +7,7 @@ from update_pipeline import main as run_pipeline
 
 # 환경 설정
 RDF_FILE = "./ontology/RDF_Forwarding.xml"  # 감지할 RDF/TTL/OWL 파일명
-FUSEKI_UPDATE_URL = "http://3.36.178.68:3030/dataset/data?graph=default"  # Fuseki 데이터셋 주소
+FUSEKI_UPDATE_URL = "http://3.36.178.68:3030/dataset/update"  # Fuseki 데이터셋 주소
 CHECK_INTERVAL = 10  # 변경 감지 주기 (초)
 
 # 로깅 설정
