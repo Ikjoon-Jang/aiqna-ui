@@ -35,3 +35,5 @@ def search_faiss(query_vector: List[float], k: int = 5) -> List[str]:
     query = np.array([query_vector], dtype="float32")
     distances, indices = index.search(query, k)
     return [sentences[i] for i in indices[0]]
+
+save_faiss_index = save_embeddings_to_faiss

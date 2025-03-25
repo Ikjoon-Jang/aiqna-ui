@@ -14,7 +14,13 @@ def get_embedding(text: str) -> List[float]:
         input=[text],
         model=EMBEDDING_MODEL
     )
-    return response.data[0].embedding
+    embedding = response.data[0].embedding
+
+    # ✅ 방어적 체크
+    if not isinstance(embedding, list) or not all(isinstance(x, float) for x in embedding):
+        raise ValueError(f"임베딩 형식 오류: {embedding[:5]}...")
+
+    return embedding
 
 def embed_sentences(sentences: List[str]) -> List[List[float]]:
     return [get_embedding(s) for s in sentences]
