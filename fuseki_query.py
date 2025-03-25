@@ -1,9 +1,7 @@
-# fuseki_query.py
-
 import requests
 from typing import List, Dict
 
-FUSEKI_ENDPOINT = "http://3.36.178.68:3030/dataset/query"  # 수정: 실제 데이터셋 이름 사용
+FUSEKI_ENDPOINT = "http://3.36.178.68:3030/dataset/query"
 
 def run_sparql_query(query: str) -> List[Dict]:
     headers = {"Accept": "application/sparql-results+json"}
@@ -77,19 +75,18 @@ def get_data_properties() -> List[Dict]:
         for r in results
     ]
 
-def get_individuals_with_literals() -> List[Dict]:
+def get_individuals_with_literals_and_relations() -> List[Dict]:
     query = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-    SELECT ?individual ?type ?prop ?value
+    SELECT ?individual ?type ?prop ?value ?valueType
     WHERE {
       ?individual a ?type .
       FILTER(?type != owl:Class && ?type != owl:ObjectProperty && ?type != owl:DatatypeProperty)
       OPTIONAL {
         ?individual ?prop ?value .
-        FILTER(isLiteral(?value))
+        BIND(DATATYPE(?value) AS ?valueType)
       }
     }
     """
@@ -103,12 +100,22 @@ def get_individuals_with_literals() -> List[Dict]:
             individuals[uri] = {
                 "uri": uri,
                 "type": r.get("type", {}).get("value"),
-                "literals": []
+                "literals": [],
+                "relations": []
             }
-        if "prop" in r and "value" in r:
+        prop = r.get("prop", {}).get("value")
+        value = r.get("value", {}).get("value")
+        if not prop or not value:
+            continue
+        if "valueType" in r and r["valueType"].get("value"):  # literal
             individuals[uri]["literals"].append({
-                "prop": r["prop"].get("value"),
-                "value": r["value"].get("value")
+                "prop": prop,
+                "value": value
+            })
+        else:  # object property (relation)
+            individuals[uri]["relations"].append({
+                "prop": prop,
+                "target": value
             })
     return list(individuals.values())
 

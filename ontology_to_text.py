@@ -1,4 +1,3 @@
-# ontology_to_text.py
 from urllib.parse import urlparse
 from typing import Optional, Dict, List
 
@@ -31,16 +30,20 @@ def data_property_to_text(prop_uri, domain, range_) -> str:
     rng = extract_local_name(range_)
     return f"'{prop}' is a data property of {dom} and has value type {rng}."
 
-def individual_to_text(ind_uri, type_uri, literals: Optional[List[Dict]] = None) -> str:
+def individual_to_text(ind_uri, type_uri, literals: Optional[List[Dict]] = None, relations: Optional[List[Dict]] = None) -> str:
     name = extract_local_name(ind_uri)
     type_name = extract_local_name(type_uri)
+    text = f"{name} is an individual of type {type_name}."
+    
     if literals:
-        literals_text = "; ".join(
-            [f"{extract_local_name(lit.get('prop'))} = {lit.get('value')}" for lit in literals if 'prop' in lit and 'value' in lit]
-        )
-        return f"{name} is an individual of type {type_name} with values: {literals_text}."
-    else:
-        return f"{name} is an individual of type {type_name}."
+        literal_text = "; ".join([f"{extract_local_name(l['prop'])} = {l['value']}" for l in literals])
+        text += f" It has literal values: {literal_text}."
+
+    if relations:
+        relation_text = "; ".join([f"{extract_local_name(r['prop'])} → {extract_local_name(r['target'])}" for r in relations])
+        text += f" It is connected to: {relation_text}."
+    
+    return text
 
 def swrl_rule_to_text(rule: Dict) -> str:
     label = rule.get("label", {}).get("value")
@@ -57,29 +60,18 @@ def swrl_rule_to_text(rule: Dict) -> str:
 def ontology_elements_to_sentences(classes, object_props, data_props, individuals, rules):
     sentences = []
 
-    # 클래스
     for cls in classes:
-        uri = cls.get("uri")
-        label = cls.get("label")
-        comment = cls.get("comment")
-        sentences.append(class_to_text(uri, label, comment))
+        sentences.append(class_to_text(cls.get("uri"), cls.get("label"), cls.get("comment")))
 
-    # 객체 속성
     for prop in object_props:
         sentences.append(object_property_to_text(prop.get("uri"), prop.get("domain"), prop.get("range")))
 
-    # 데이터 속성
     for prop in data_props:
         sentences.append(data_property_to_text(prop.get("uri"), prop.get("domain"), prop.get("range")))
 
-    # 인디비주얼
     for ind in individuals:
-        uri = ind.get("uri")
-        type_ = ind.get("type")
-        literals = ind.get("literals", [])
-        sentences.append(individual_to_text(uri, type_, literals))
+        sentences.append(individual_to_text(ind.get("uri"), ind.get("type"), ind.get("literals"), ind.get("relations")))
 
-    # SWRL 룰
     for rule in rules:
         sentences.append(swrl_rule_to_text(rule))
 

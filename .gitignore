@@ -19,3 +19,7 @@ venv/
 
 # Logs
 *.log
+
+# FAISS 관련 파일 무시
+faiss_index.index
+faiss_metadata.pkl
