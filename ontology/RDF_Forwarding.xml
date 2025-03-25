@@ -852,7 +852,7 @@
         <forwarding:hasDestination rdf:resource="http://www.qlinx.co.kr/ontology/forwarding#locBusan"/>
         <forwarding:hasBaseDeliveryAmount rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">8500</forwarding:hasBaseDeliveryAmount>
         <forwarding:hasCurrency>USD</forwarding:hasCurrency>
-        <forwarding:hasDays rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">16</forwarding:hasDays>
+        <forwarding:hasDays rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">17</forwarding:hasDays>
         <forwarding:hasDistance rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">9800</forwarding:hasDistance>
         <forwarding:hasRouteID>R0006</forwarding:hasRouteID>
         <forwarding:hasRouteName>LBH→BUS</forwarding:hasRouteName>
