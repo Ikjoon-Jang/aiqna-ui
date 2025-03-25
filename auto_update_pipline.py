@@ -26,7 +26,7 @@ def get_file_hash(path):
 
 def update_fuseki(rdf_path):
     with open(rdf_path, "rb") as f:
-        headers = {"Content-Type": "text/turtle"}
+        headers = {"Content-Type": "application/rdf+xml"}
         res = requests.post(FUSEKI_UPDATE_URL, headers=headers, data=f)
         res.raise_for_status()
     logging.info("✅ Fuseki에 RDF 업로드 완료")
